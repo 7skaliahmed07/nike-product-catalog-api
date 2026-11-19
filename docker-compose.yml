@@ -1,0 +1,36 @@
+
+services:
+  db:
+    image: postgres:16
+    container_name: nike-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: nike_user
+      POSTGRES_PASSWORD: nike_password
+      POSTGRES_DB: nike_catalog
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./docker/init-test-db.sh:/docker-entrypoint-initdb.d/01-init-test-db.sh:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U nike_user -d nike_catalog"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  app:
+    build: .
+    container_name: nike-catalog-api
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      DATABASE_URL: postgresql+psycopg://nike_user:nike_password@db:5432/nike_catalog
+      TEST_DATABASE_URL: postgresql+psycopg://nike_user:nike_password@db:5432/nike_catalog_test
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  postgres_data:
