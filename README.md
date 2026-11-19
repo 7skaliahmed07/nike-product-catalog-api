@@ -35,6 +35,12 @@ Once running, access:
 - API: http://localhost:8000
 - Swagger documentation: http://localhost:8000/docs
 
+
+## System Architecture
+
+![Nike Product Catalog API Architecture](architecture_NIKE_catalog.jpeg)
+
+
 ## API Endpoints
 
 | Method | Endpoint | Description |
